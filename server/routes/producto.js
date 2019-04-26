@@ -157,8 +157,44 @@ app.get('/productos/:id', verificarToken, (req, res) => {
 })
 
 app.delete('/productos/:id', (req, res) => {
-    //grabar id
-    //actualizar una categoria del listado
+
+    let id = req.params.id;
+
+    Producto.findById(id, (err, productoDB) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                err
+            })
+        }
+
+        if (!productoDB) {
+            return res.status(400).json({
+                ok: false,
+                err: 'El id no exite'
+            })
+        }
+
+        productoDB.disponible = false;
+
+        productoDB.save((err, productoBorrado) => {
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    err
+                })
+            }
+
+            res.json({
+                ok: true,
+                producto: productoBorrado,
+                mensaje: 'producto borrado'
+            })
+        })
+
+    })
+
 })
 
 module.exports = app;
